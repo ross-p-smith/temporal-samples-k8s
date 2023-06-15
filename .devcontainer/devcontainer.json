@@ -1,0 +1,43 @@
+{
+	"name": "Temporal K8s Sample",
+	"image": "mcr.microsoft.com/devcontainers/base:bullseye",
+	
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {		
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-vscode.azurecli",
+				"ms-azuretools.vscode-bicep"
+			]
+		}
+	},
+	
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "az --version",
+
+	// Uncomment when using a ptrace-based debugger like C++, Go, and Rust
+	// "runArgs": [ "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined" ],
+
+	// Set `remoteUser` to `root` to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+	"remoteUser": "vscode",
+	"features": {
+		"ghcr.io/devcontainers/features/azure-cli:1": {
+			"installBicep": "true"
+		},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
+		"ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
+		"ghcr.io/devcontainers-contrib/features/kind:1": {},
+		"ghcr.io/devcontainers-contrib/features/apt-get-packages:1": {
+			"packages": [
+				"parallel",
+				"xdg-utils"
+			]
+		}
+	},
+	"postCreateCommand": "curl -fsSL https://aka.ms/install-azd.sh | bash"
+}

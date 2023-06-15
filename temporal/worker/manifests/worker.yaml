@@ -1,0 +1,44 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: temporal-worker-app
+  labels:
+    app: temporal-worker-app
+spec:
+  selector:
+    app: temporal-worker-app
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8090
+    targetPort: 8080
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: temporal-worker-app
+  labels:
+    app: temporal-worker-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: temporal-worker-app
+  template:
+    metadata:
+      labels:
+        io.kompose.network/temporal-network: "true"
+        app: temporal-worker-app
+    spec:
+      containers:
+      - name: node
+        image: ${SERVICE_TEMPORAL_IMAGE_NAME}
+        env:
+        - name: TEMPORAL_GRPC_ENDPOINT
+          value: temporal:7233
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        imagePullPolicy: Always
