@@ -1,6 +1,10 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
 
 name: temporal-samples-k8s
+hooks:
+  predeploy:
+    shell: sh
+    run: ./temporal/hooks/upload_secrets.sh
 services:
   temporal:
     project: ./temporal/worker

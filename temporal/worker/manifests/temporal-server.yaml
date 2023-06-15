@@ -6,7 +6,6 @@ metadata:
     kompose.cmd: kompose convert -f docker-compose.yml -o k8s/temporal.yaml
     kompose.version: 1.26.1 (1b040dd2)
     kompose.volume.type: configMap
-  creationTimestamp: null
   labels:
     io.kompose.service: temporal
   name: temporal
@@ -27,7 +26,6 @@ metadata:
     kompose.cmd: kompose convert -f docker-compose.yml -o k8s/temporal.yaml
     kompose.version: 1.26.1 (1b040dd2)
     kompose.volume.type: configMap
-  creationTimestamp: null
   labels:
     io.kompose.service: temporal
   name: temporal
@@ -44,7 +42,6 @@ spec:
         kompose.cmd: kompose convert -f docker-compose.yml -o k8s/temporal.yaml
         kompose.version: 1.26.1 (1b040dd2)
         kompose.volume.type: configMap
-      creationTimestamp: null
       labels:
         io.kompose.network/temporal-network: "true"
         io.kompose.service: temporal
@@ -69,6 +66,45 @@ spec:
               value: postgresql
             - name: POSTGRES_USER
               value: temporal
+            - name: SERVICES
+              value: frontend:matching:history:worker
+            - name: TEMPORAL_TLS_SERVER_CA_CERT
+              value: /etc/temporal/config/certs/ca.cert
+            - name: TEMPORAL_TLS_SERVER_CERT
+              value: /etc/temporal/config/certs/cluster.cert
+            - name: TEMPORAL_TLS_SERVER_KEY
+              value: /etc/temporal/config/certs/cluster.key
+            - name: TEMPORAL_TLS_REQUIRE_CLIENT_AUTH
+              value: "true"
+            - name: TEMPORAL_TLS_FRONTEND_CERT
+              value: /etc/temporal/config/certs/cluster.cert
+            - name: TEMPORAL_TLS_FRONTEND_KEY
+              value: /etc/temporal/config/certs/cluster.key
+            - name: TEMPORAL_TLS_CLIENT1_CA_CERT
+              value: /etc/temporal/config/certs/ca.cert
+            - name: TEMPORAL_TLS_CLIENT2_CA_CERT
+              value: /etc/temporal/config/certs/ca.cert
+            - name: TEMPORAL_TLS_INTERNODE_SERVER_NAME
+              value: tls-sample
+            - name: TEMPORAL_TLS_FRONTEND_SERVER_NAME
+              value: tls-sample
+            - name: TEMPORAL_TLS_FRONTEND_DISABLE_HOST_VERIFICATION
+              value: "false"
+            - name: TEMPORAL_TLS_INTERNODE_DISABLE_HOST_VERIFICATION
+              value: "false"
+            - name: TEMPORAL_CLI_ADDRESS
+              value: temporal:7236
+            - name: TEMPORAL_CLI_TLS_CA
+              value: /etc/temporal/config/certs/ca.cert
+            - name: TEMPORAL_CLI_TLS_CERT
+              value: /etc/temporal/config/certs/cluster.cert
+            - name: TEMPORAL_CLI_TLS_KEY
+              value: /etc/temporal/config/certs/cluster.key"
+            - name: TEMPORAL_CLI_TLS_ENABLE_HOST_VERIFICATION
+              value: "true"
+            - name: TEMPORAL_CLI_TLS_SERVER_NAME
+              value: tls-sample
+
           image: temporalio/auto-setup:1.17.1
           name: temporal
           ports:
@@ -77,11 +113,21 @@ spec:
           volumeMounts:
             - mountPath: /etc/temporal/config/dynamicconfig
               name: temporal-cm0
+            - name: mtls-certs
+              mountPath: /etc/temporal/config/certs
+              readOnly: true
       restartPolicy: Always
       volumes:
         - configMap:
             name: temporal-cm0
           name: temporal-cm0
+        - name: mtls-certs
+          projected:
+            sources:
+              - secret:
+                  name: ca-cert
+              - secret:
+                  name: cluster-cert
       enableServiceLinks: false
 status: {}
 ---

@@ -49,5 +49,8 @@ keda:
 
 clean: ## 🧹 Clean up
 	@echo -e "\e[34m$@\e[0m" || true
+	@kubectl --namespace temporal-samples-k8s delete secret ca-cert || true
+	@kubectl --namespace temporal-samples-k8s delete secret cluster-cert || true
+	@kubectl --namespace temporal-samples-k8s delete secret client-cert || true
 	@kubectl delete all --all -n temporal-samples-k8s --wait
 	@kind delete cluster --name temporal-aks

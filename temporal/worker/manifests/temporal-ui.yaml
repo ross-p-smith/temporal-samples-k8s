@@ -5,7 +5,6 @@ metadata:
   annotations:
     kompose.cmd: kompose convert -f docker-compose.yml -o k8s/temporal.yaml
     kompose.version: 1.26.1 (1b040dd2)
-  creationTimestamp: null
   labels:
     io.kompose.service: temporal-ui
   name: temporal-ui
@@ -24,7 +23,6 @@ metadata:
   annotations:
     kompose.cmd: kompose convert -f docker-compose.yml -o k8s/temporal.yaml
     kompose.version: 1.26.1 (1b040dd2)
-  creationTimestamp: null
   labels:
     io.kompose.service: temporal-ui
   name: temporal-ui
@@ -39,7 +37,6 @@ spec:
       annotations:
         kompose.cmd: kompose convert -f docker-compose.yml -o k8s/temporal.yaml
         kompose.version: 1.26.1 (1b040dd2)
-      creationTimestamp: null
       labels:
         io.kompose.network/temporal-network: "true"
         io.kompose.service: temporal-ui
@@ -50,11 +47,33 @@ spec:
               value: temporal:7233
             - name: TEMPORAL_CORS_ORIGINS
               value: http://localhost:3000
+            - name: TEMPORAL_TLS_CA
+              value: /etc/temporal/config/certs/ca.cert
+            - name: TEMPORAL_TLS_CERT
+              value: /etc/temporal/config/certs/cluster.cert
+            - name: TEMPORAL_TLS_KEY
+              value: /etc/temporal/config/certs/cluster.key
+            - name: TEMPORAL_TLS_ENABLE_HOST_VERIFICATION
+              value: "true"
+            - name: TEMPORAL_TLS_SERVER_NAME
+              value: tls-sample
           image: temporalio/ui:2.2.3
           name: temporal-ui
           ports:
             - containerPort: 8080
           resources: {}
+          volumeMounts:
+            - name: mtls-certs
+              mountPath: /etc/temporal/config/certs
+              readOnly: true
       restartPolicy: Always
       enableServiceLinks: false
+      volumes:
+        - name: mtls-certs
+          projected:
+            sources:
+              - secret:
+                  name: ca-cert
+              - secret:
+                  name: cluster-cert
 status: {}
