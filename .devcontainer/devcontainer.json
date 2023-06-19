@@ -9,7 +9,8 @@
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
 				"ms-vscode.azurecli",
-				"ms-azuretools.vscode-bicep"
+				"ms-azuretools.vscode-bicep",
+				"ms-kubernetes-tools.vscode-kubernetes-tools"
 			]
 		}
 	},

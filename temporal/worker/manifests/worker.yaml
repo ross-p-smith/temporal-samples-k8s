@@ -37,8 +37,29 @@ spec:
         env:
         - name: TEMPORAL_GRPC_ENDPOINT
           value: temporal:7233
+        - name: TEMPORAL_TLS_CA
+          value: /etc/temporal/config/certs/ca.cert
+        - name: TEMPORAL_TLS_CERT
+          value: /etc/temporal/config/certs/cluster.cert
+        - name: TEMPORAL_TLS_KEY
+          value: /etc/temporal/config/certs/cluster.key
+        - name: TEMPORAL_TLS_SERVER_NAME
+          value: tls-sample
+        resources: {}  
         ports:
         - name: http
           containerPort: 8080
           protocol: TCP
         imagePullPolicy: Always
+        volumeMounts:
+          - name: mtls-certs
+            mountPath: /etc/temporal/config/certs
+            readOnly: true
+      volumes:
+        - name: mtls-certs
+          projected:
+            sources:
+              - secret:
+                  name: ca-cert
+              - secret:
+                  name: cluster-cert
