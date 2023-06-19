@@ -35,7 +35,7 @@ spec:
       - name: node
         image: ${SERVICE_TEMPORAL_IMAGE_NAME}
         env:
-        - name: TEMPORAL_GRPC_ENDPOINT
+        - name: TEMPORAL_ADDRESS
           value: temporal:7233
         - name: TEMPORAL_TLS_CA
           value: /etc/temporal/config/certs/ca.cert
@@ -53,6 +53,10 @@ spec:
           containerPort: 8080
           protocol: TCP
         imagePullPolicy: Always
+        volumeMounts:
+          - name: mtls-certs
+            mountPath: /etc/temporal/config/certs
+            readOnly: true
       volumes:
         - name: mtls-certs
           projected:
@@ -60,4 +64,4 @@ spec:
               - secret:
                   name: ca-cert
               - secret:
-                  name: client-cert
+                  name: cluster-cert

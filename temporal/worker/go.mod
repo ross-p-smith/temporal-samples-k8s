@@ -4,5 +4,5 @@ go 1.14
 
 require (
 	github.com/temporalio/samples-go v1.3.0
-	go.temporal.io/sdk v1.3.0
+	go.temporal.io/sdk v1.23.0
 )
